@@ -1,0 +1,89 @@
+Args_Array[] // to hold the arguments off the command line
+**Line // pointer to hold the command line input 
+// Called with command args
+Open file specified in cmd args
+While (not EOF)
+	Parse(line, args_array)
+	Case: output/input redirection
+		Evaluate args_array for filenames
+		open file and duplicate fd into stdin or stdout
+	Case: piping
+		Create pipe
+		Fork
+		if child:
+			duplicate stdin to read-end of pipe
+			exec input process
+		if parent:
+			duplicate stdout to write-end of pipe
+			exec output process
+		
+	Case: input is a built-in
+		Run the built-in
+	Case: input is an executable with the background operator
+		Look in path for the executable file and construct file path
+		Fork the shell
+		Exec the file at path with Args_Array		
+	Case: input is an executable
+		Look in path for the executable file and construct file path
+		Fork()
+		Exec the file at path with Args_Array
+		Wait()
+	Reset stdin and stdout fds
+	Close files
+
+// Normal Operation
+While (not EOF or line == ‘exit’)
+	Print prompt
+	Get line from user input
+	Parse(line) the input // maybe parse returns an int so the stuff can be done in a switch
+	Handle output/input redirection
+	Handle piping
+	Case: input is a built-in:
+		Run the built-in
+	Case: input is an executable with the background operator
+		Look in path for the executable file and construct file path
+		Fork the shell
+		Exec the file at path with Args_Array		
+	Case: input is an executable:
+		Look in path for the executable file and construct file path
+		Fork()
+		Exec the file at path with Args_Array
+		Wait()
+		
+int parse(char *cmd_string, arg array)
+	Tokenize the command string and store the tokens in the arg array
+	return an int of bit flags for piping, redirection, etc
+	
+// Built Ins
+cd(char * path)
+	If path is NULL print cwd
+	Change cwd to path and open directory there
+	Error if can't open directory
+	
+clr(void)
+	print n newline characters
+	
+dir(char *path)
+	Open directory at path with opendir()
+	While readir(dir) is not NULL:
+		Print the name of the file
+
+environ(void)
+	Loop over environment variables array and print
+	
+echo(char *comment)
+	print comment to stdout followed by newline
+	
+help(void)
+	Open manual file
+	fork and exec 'more' with file as argument
+
+pause(void)
+	
+quit(void)
+	shut everything down and call exit()
+	
+
+	
+	
+

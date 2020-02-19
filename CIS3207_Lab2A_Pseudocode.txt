@@ -4,10 +4,12 @@ Args_Array[] // to hold the arguments off the command line
 Open file specified in cmd args
 While (not EOF)
 	Parse(line, args_array)
-	Case: output/input redirection
+	If: output/input redirection
 		Evaluate args_array for filenames
-		open file and duplicate fd into stdin or stdout
-	Case: piping
+		dup() stdin or stdout to temporary variable
+		close stdin or stdout
+		open file into stdin or stdout fd	
+	If: piping
 		Create pipe
 		Fork
 		if child:
@@ -16,7 +18,43 @@ While (not EOF)
 		if parent:
 			duplicate stdout to write-end of pipe
 			exec output process
+	Case: input is a built-in
+		Run the built-in
+	Case: input is an executable with the background operator
+		Look in path for the executable file and construct file path
+		Fork the shell
+		Exec the file at path with Args_Array
+		continue to next iteration without waiting
+	Case: input is an executable
+		Look in path for the executable file and construct file path
+		Fork()
+		Exec the file at path with Args_Array
+		Wait()
+	If: redirection
+		dup2() temporary copy into destination
+		close copies
+	Close files
+
+// Normal Operation
+While (not EOF or line == ‘exit’)
+	Print prompt
+	Get line from user input
+	Parse(line, args_array)
+	If: output/input redirection
+		Evaluate args_array for filenames
+		dup() stdin or stdout to temporary variable
+		close stdin or stdout
+		open file into stdin or stdout fd
 		
+	If: piping
+		Create pipe
+		Fork
+		if child:
+			duplicate stdin to read-end of pipe
+			exec input process
+		if parent:
+			duplicate stdout to write-end of pipe
+			exec output process
 	Case: input is a built-in
 		Run the built-in
 	Case: input is an executable with the background operator
@@ -28,27 +66,10 @@ While (not EOF)
 		Fork()
 		Exec the file at path with Args_Array
 		Wait()
-	Reset stdin and stdout fds
+	If: redirection
+		dup2() temporary copy into destination
+		close copies
 	Close files
-
-// Normal Operation
-While (not EOF or line == ‘exit’)
-	Print prompt
-	Get line from user input
-	Parse(line) the input // maybe parse returns an int so the stuff can be done in a switch
-	Handle output/input redirection
-	Handle piping
-	Case: input is a built-in:
-		Run the built-in
-	Case: input is an executable with the background operator
-		Look in path for the executable file and construct file path
-		Fork the shell
-		Exec the file at path with Args_Array		
-	Case: input is an executable:
-		Look in path for the executable file and construct file path
-		Fork()
-		Exec the file at path with Args_Array
-		Wait()
 		
 int parse(char *cmd_string, arg array)
 	Tokenize the command string and store the tokens in the arg array
@@ -77,11 +98,30 @@ echo(char *comment)
 help(void)
 	Open manual file
 	fork and exec 'more' with file as argument
+	
+path(void)
+	get cwd from path variable
+	print
 
 pause(void)
 	
 quit(void)
 	shut everything down and call exit()
+
+shell_err(int)
+    handle relevant error messages
+
+
+// Development and Testing Paradigms
+-Built-ins and key functions for the operation of the program will be in separate files
+ from the main program.
+-Unit tests will be created for functions and built ins
+-Program will be developed with increasing degrees of functionality that can be tested at each step
+	1. Construct main loop to take arguments and parse, but print output instead of executing
+	2. Write any additional functions necessary to compelete the main loop
+	3. Implement logic for process execution
+	4. Implement Piping and redirection
+	5. Apply logic from main loop to processing batch files
 	
 
 	

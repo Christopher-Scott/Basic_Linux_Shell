@@ -1,115 +1,192 @@
-Args_Array[] // to hold the arguments off the command line
-**Line // pointer to hold the command line input 
-// Called with command args
+char * args_Array[] // to hold the arguments off the command line
+char **Line // pointer to hold the command line input
+char **PATH // copy of environment path
+
+// Batch Mode
 Open file specified in cmd args
 While (not EOF)
+	read line from batch file
 	Parse(line, args_array)
-	If: output/input redirection
-		Evaluate args_array for filenames
-		dup() stdin or stdout to temporary variable
-		close stdin or stdout
-		open file into stdin or stdout fd	
-	If: piping
-		Create pipe
-		Fork
-		if child:
-			duplicate stdin to read-end of pipe
-			exec input process
-		if parent:
-			duplicate stdout to write-end of pipe
-			exec output process
 	Case: input is a built-in
 		Run the built-in
-	Case: input is an executable with the background operator
-		Look in path for the executable file and construct file path
-		Fork the shell
-		Exec the file at path with Args_Array
-		continue to next iteration without waiting
 	Case: input is an executable
-		Look in path for the executable file and construct file path
-		Fork()
-		Exec the file at path with Args_Array
-		Wait()
+		for each directory in path:
+			if access(path + cmd) is successful:
+				concat path + cmd
+				break
+		If: output/input redirection
+			Evaluate args_array for filenames
+			dup() stdin or stdout to temporary variable
+			close stdin or stdout
+			open file into stdin or stdout fd
+		If: piping
+			Create pipe
+			Fork
+			if child:
+				duplicate stdin to read-end of pipe
+				exec input process
+			if parent:
+				duplicate stdout to write-end of pipe
+				exec output process
+		else:
+			Fork the shell
+			Exec the file at path with Args_Array
+		If background process:
+			continue to next iteration without waiting
+		else:
+			wait
 	If: redirection
-		dup2() temporary copy into destination
+		dup2() temporary copy back into destination
 		close copies
 	Close files
 
-// Normal Operation
-While (not EOF or line == ‘exit’)
+// Interactive Mode
+While (not EOF and line != ‘exit’)
 	Print prompt
 	Get line from user input
-	Parse(line, args_array)
-	If: output/input redirection
-		Evaluate args_array for filenames
-		dup() stdin or stdout to temporary variable
-		close stdin or stdout
-		open file into stdin or stdout fd
-		
-	If: piping
-		Create pipe
-		Fork
-		if child:
-			duplicate stdin to read-end of pipe
-			exec input process
-		if parent:
-			duplicate stdout to write-end of pipe
-			exec output process
+	parse(line, args_array)
 	Case: input is a built-in
 		Run the built-in
-	Case: input is an executable with the background operator
-		Look in path for the executable file and construct file path
-		Fork the shell
-		Exec the file at path with Args_Array		
+
 	Case: input is an executable
 		Look in path for the executable file and construct file path
-		Fork()
-		Exec the file at path with Args_Array
-		Wait()
+		If: output/input redirection
+			Evaluate args_array for filenames
+			dup() stdin or stdout to temporary variable
+			close stdin or stdout
+			open file into stdin or stdout fd
+		If: piping
+			Create pipe
+			Fork
+			if child:
+				duplicate stdin to read-end of pipe
+				exec input process
+			if parent:
+				duplicate stdout to write-end of pipe
+				exec output process
+		else:
+			Fork the shell
+			Exec the file at path with Args_Array
+		If background process:
+			continue to next iteration without waiting
+		else:
+			wait
 	If: redirection
 		dup2() temporary copy into destination
 		close copies
 	Close files
-		
-int parse(char *cmd_string, arg array)
+
+int parse(char *cmd_string, arg_array)
 	Tokenize the command string and store the tokens in the arg array
 	return an int of bit flags for piping, redirection, etc
-	
+
+// TODO:
+int parse(char *cmd_string, queue *)
+	temp queue
+	while strtok(cmd_string) not NULL:
+		enqueue token to temp
+	// build command queue
+	// traverse the command string until next (pipe, redirect, &) is found or end
+	case cmd:
+		build array of tokens with command at arr[0] and args after
+		Null terminate
+		enqueue()
+
+
+
+
 // Built Ins
 cd(char * path)
-	If path is NULL print cwd
-	Change cwd to path and open directory there
-	Error if can't open directory
-	
-clr(void)
-	print n newline characters
-	
-dir(char *path)
-	Open directory at path with opendir()
-	While readir(dir) is not NULL:
-		Print the name of the file
+	If path is NULL:
+		get cwd from environ path
+		print cwd
+	else:
+		if chdir(path) < 0:
+			print error
 
-environ(void)
-	Loop over environment variables array and print
-	
-echo(char *comment)
-	print comment to stdout followed by newline
-	
+clr(void)
+	print clear screen string
+
+dir(char *path, char *redir_file, int re_type)
+	case No Redirection:
+		if path is NULL:
+			get cwd from environ path
+			path = cwd
+		opendir(path)
+		While readir(dir) is not NULL:
+			Print the name of the file
+	case Output Redirection:
+		open(output file | Overwrite)
+		if path is NULL:
+			get cwd from environ path
+			path = cwd
+		opendir(path)
+	case Append Output Redirection:
+			open(output file | Append)
+			if path is NULL:
+				get cwd from environ path
+				path = cwd
+			opendir(path)
+			While readir(dir) is not NULL:
+				Print the name of the file to output
+
+environ(char *var, char *redir_file, int re_type)
+	case No Redirection:
+		if var is NULL:
+			Get environment variables
+			Loop over environment variables array:
+				print
+		else:
+			Get environment variables
+			find var
+			print
+
+	case Output Redirect:
+		open(output file | Overwrite)
+		if var is NULL:
+			Get environment variables
+			Loop over environment variables array:
+				write to output
+		else:
+			Get environment variables
+			find var
+			write to output
+	case Append Output Redirection:
+		open(output file | Append)
+		if var is NULL:
+			Get environment variables
+			Loop over environment variables array:
+				write to output
+		else:
+			Get environment variables
+			find var
+			write to output
+
+
+echo(char *comment, char *redir_file, int re_type)
+	case No Redirection:
+		print comment to stdout followed by newline
+	case Output Redirection:
+		open(output file | overwrite)
+		print comment to output followed by newline
+	case Append Output Redirection:
+		open(output file | append)
+		print comment to output followed by newline
+
 help(void)
 	Open manual file
-	fork and exec 'more' with file as argument
-	
-path(void)
-	get cwd from path variable
-	print
+	fork
+	if child:
+		exec 'more' with file as argument
+	else:
+		wait()
 
 pause(void)
-	
+	while getchar is not 'enter'
+	flush stdin
+
 quit(void)
 	shut everything down and call exit()
-
-shell_err(int)
-    handle relevant error messages
 
 
 // Development and Testing Paradigms
@@ -118,12 +195,7 @@ shell_err(int)
 -Unit tests will be created for functions and built ins
 -Program will be developed with increasing degrees of functionality that can be tested at each step
 	1. Construct main loop to take arguments and parse, but print output instead of executing
-	2. Write any additional functions necessary to compelete the main loop
+	2. Write any additional functions necessary to complete the main loop
 	3. Implement logic for process execution
 	4. Implement Piping and redirection
 	5. Apply logic from main loop to processing batch files
-	
-
-	
-	
-

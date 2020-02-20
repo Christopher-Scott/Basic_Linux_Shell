@@ -1,6 +1,7 @@
 char * args_Array[] // to hold the arguments off the command line
 char **Line // pointer to hold the command line input
 char **PATH // copy of environment path
+queue *command_queue
 
 // Batch Mode
 Open file specified in cmd args
@@ -45,52 +46,81 @@ While (not EOF and line != ‘exit’)
 	Print prompt
 	Get line from user input
 	parse(line, args_array)
-	Case: input is a built-in
-		Run the built-in
+	while command queue not empty:
+		cmd = next command
+		Case: cmd is pipe
+			// build array of pipes in a row
+			while next_cmd is pipe:
+				arr[i] = next_cmd
+			create pipe(fd)
+			for each n - 1 pipes:
+				fork
+				if child:
+				// TODO
 
-	Case: input is an executable
-		Look in path for the executable file and construct file path
-		If: output/input redirection
-			Evaluate args_array for filenames
-			dup() stdin or stdout to temporary variable
-			close stdin or stdout
-			open file into stdin or stdout fd
-		If: piping
-			Create pipe
-			Fork
-			if child:
-				duplicate stdin to read-end of pipe
-				exec input process
-			if parent:
-				duplicate stdout to write-end of pipe
-				exec output process
-		else:
-			Fork the shell
-			Exec the file at path with Args_Array
-		If background process:
-			continue to next iteration without waiting
-		else:
-			wait
-	If: redirection
-		dup2() temporary copy into destination
-		close copies
+
+		Case: input is a built-in
+			Run the built-in
+
+		Case: input is an executable
+			Look in path for the executable file and construct file path
+			If: output/input redirection
+				Evaluate args_array for filenames
+				dup() stdin or stdout to temporary variable
+				close stdin or stdout
+				open file into stdin or stdout fd
+			If: piping
+
+			else:
+				Fork the shell
+				Exec the file at path with Args_Array
+			If background process:
+				continue to next iteration without waiting
+			else:
+				wait
 	Close files
 
 int parse(char *cmd_string, arg_array)
 	Tokenize the command string and store the tokens in the arg array
 	return an int of bit flags for piping, redirection, etc
 
-// TODO:
+// Command string is tokenized, then tokens are traversed building the next Command
+// to add to the command queue
 int parse(char *cmd_string, queue *)
 	temp queue
 	while strtok(cmd_string) not NULL:
 		enqueue token to temp
-	// build command queue
-	// traverse the command string until next (pipe, redirect, &) is found or end
-	case cmd:
-		build array of tokens with command at arr[0] and args after
-		Null terminate
-		enqueue()
+	while temp not empty:
+		case cmd:
+			build array of tokens with command at arr[0] and args after
+			Null terminate
+			enqueue()
+		case pipe:
+			arr[0] = '|'
+			get previous cmd_arr
+			arr[1] = previous cmd_arr // input command
+			get next cmd_arr // loop until another command is found or end
+			arr[2] = next cmd_arr // output command
+			replace previous cmd_arr in command queue with new pipe_arr
+		case input redirect:
+			arr[0] = '<'
+			get previous cmd_arr
+			arr[1] = previous cd_arr
+			arr[2] = next token // input file
+			replace previous cmd_arr in command queue with new input_arr
+		case output redirect:
+			arr[0] = '>'
+			get previous cmd_arr
+			arr[1] = cmd_arr
+			arr[2] = next token // output file
+			replace previous cmd_arr in command queue with new output_arr
+		case append redirect:
+			arr[0] = ">>"
+			get previous cmd_arr
+			arr[1] = cmd_arr
+			arr[2] = next token // output file
+			replace previous cmd_arr in command queue with new output_arr
+		return command queue
 
 
 

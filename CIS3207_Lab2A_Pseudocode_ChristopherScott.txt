@@ -1,0 +1,278 @@
+// CIS3207 Lab2 Shell
+// Christopher Scott
+
+char * args_Array[] // to hold the arguments off the command line
+char *Line // pointer to hold the command line input
+char **PATH // copy of environment path
+queue *queue
+
+Main()
+	// Batch Mode
+	if( argc == 2)
+	Open file specified in argv
+	While getline(batch file) is not 0:
+		Parse(line, queue)
+		// handle a single line
+		while current = dequeue(queue) not NULL:
+			cmd = current->cmd
+			if cmd.input not NULL:
+				open(input)
+				save = dup(stdin)
+				dup2(input, 0)
+			if cmd.output not NULL and cmd.append not NULL:
+				error
+			else if cmd.output not NULL:
+				open(output) // truncate
+				save = dup(stdout)
+				dup2(output, 1)
+			else if cmd.append not NULL:
+				open(output) // append
+				save = dup(stdout)
+				dup2(output, 1)
+			if cmd.pipe is NULL: // Only command in this chain
+				if cmd is built in:
+					run built in
+					restore stdin and stdout if redirection
+				else:
+					fork
+					buildpath(path, cmd)
+					exec(cmd.argv[0], cmd.argv)
+					if not current.background:
+						wait
+			else: // Pipe is not NULL
+				read = stdinfile_no
+				while cmd.pipe not NULL:
+					pipe(fd)
+					fork
+					if child:
+						if read is not stdin:
+							dup2(read, 0)
+						if fd[1] is not stdout:
+							dup2(fd[1], 1)
+						if cmd is built in:
+							run built in
+						else:
+							buildpath(path, cmd)
+							exec(cmd.argv[0], cmd.argv)
+					if parent:
+						read = fd[0] // store the read end of the pipe for next command
+						cmd = cmd.pipe
+				// Last command gets read input only but have to check for output redirect
+				fork
+				if child:
+					dup2(read, 0)
+					if cmd.output not NULL and cmd.append not NULL:
+						error
+					else if cmd.output not NULL:
+						set up output
+					else if cmd.append not NULL:
+						set up append
+					buildpath(path, cmd)
+					exec(cmd.argv[0], cmd.argv)
+				if parent:
+					if not current.background:
+						wait
+
+		Close files
+
+
+	// Interactive Mode
+	While (not EOF and line != ‘exit’)
+		Print prompt
+		Get line from user input
+		parse(line, queue)
+		// handle a single line
+		while current = dequeue(queue) not NULL:
+			cmd = current->cmd
+			if cmd.input not NULL:
+				open(input)
+				save = dup(stdin)
+				dup2(input, 0)
+			if cmd.output not NULL and cmd.append not NULL:
+				error
+			else if cmd.output not NULL:
+				open(output) // truncate
+				save = dup(stdout)
+				dup2(output, 1)
+			else if cmd.append not NULL:
+				open(output) // append
+				save = dup(stdout)
+				dup2(output, 1)
+			if cmd.pipe is NULL: // Only command in this chain
+				if cmd is built in:
+					run built in
+					restore stdin and stdout if redirection
+				else:
+					fork
+					buildpath(path, cmd)
+					exec(cmd.argv[0], cmd.argv)
+					if not current.background:
+						wait
+			else: // Pipe is not NULL
+				read = stdin fd
+				while cmd.pipe not NULL:
+					pipe(fd)
+					fork
+					if child:
+						if read is not stdin:
+							dup2(read, 0)
+						if fd[1] is not stdout:
+							dup2(fd[1], 1)
+						if cmd is built in:
+							run built in
+						else:
+							buildpath(path, cmd)
+							exec(cmd.argv[0], cmd.argv)
+					if parent:
+						read = fd[0] // store the read end of the pipe for next
+						cmd = cmd.pipe
+				// Last command gets read input only but have to check for output redirect
+				fork
+				if child:
+					dup2(read, 0)
+					if cmd.output not NULL and cmd.append not NULL:
+						error
+					else if cmd.output not NULL:
+						set up output
+					else if cmd.append not NULL:
+						set up append
+					buildpath(path, cmd)
+					exec(cmd.argv[0], cmd.argv)
+				if parent:
+					if not current.background:
+						wait
+
+		Close files
+
+int is_builtin(char *cmd)
+// search through array of built in names, return index where found or -1
+	for each in arr:
+		if strcmp(arr[i], cmd):
+			return i
+	return -1
+
+int create_argv(char **dest, char **tokens)
+//	traverse tokens until next command/keyword is found
+	while token[i] is not command/keyword symbol:
+		dest[j] = token[i]
+	return j
+
+char *buildpath(char *path, char* cmd)
+	for dir in path:
+		if cmd found:
+			return concatenated path + cmd
+	return NULL
+
+// Command string is tokenized, then tokens are traversed
+// Queue is essentially a 2 dimensional linked List
+// Each element(inner list) will be a chain of nodes representing commands that pipe to one another
+// Different elements for parallel commands ie. cmd1 & cmd2 & cmd3
+// For most commands, queue will likely contain only 1 element
+int parse(char *cmd_string, List * cmd_queue)
+	struct cmd_queue{
+		cmd_node head;
+		int size;
+		int background;
+		cmd_list *next;
+	}
+	// consists of nodes, something like:
+	struct cmd_node{
+	char * cmd;
+	char * argv;
+	char * input;
+	char * output;
+	char * append;
+	cmd_node * pipe; // a pointer to the next command in a pipe chain
+	}
+	while strtok(cmd_string) not NULL:
+		tok_array[i] = tok
+	new current node
+	enqueue(cmd_queue, current node)
+	while tok_array[i] not NULL:
+		create_argv(current argv, tok_array)
+		kword = *tok_array++ // save the keyword and go to next tok
+		current argv[last] = NULL
+		current node->argv = current argv
+		if kword is '&':
+			cmd_list->background = 1
+			enqueue(cmd_list, current node)
+			current node = new node
+		if kword is <:
+			current node->input = *tok_array++ //filename is next tok
+		if kword is >:
+			current node->output = *tok_array++
+		if kword is >>:
+			current node->output = *tok_array++
+		if kword is |:
+			n = create_argv(next argv, tok_array)
+			current node->pipe = new node
+			new node->argv = next argv
+			current node = new node
+			tok_array += n
+	return number of commands added
+
+// Built Ins
+cd(char * path)
+	If path is NULL:
+		get cwd from environ path
+		print cwd
+	else:
+		if chdir(path) < 0:
+			print error
+
+clr(void)
+	print clear screen string
+
+dir(char *path)
+	if path is NULL:
+		get cwd from environ path
+		path = cwd
+	opendir(path)
+	While readir(dir) is not NULL:
+		Print the name of the file
+
+environ(char *var)
+	if var is NULL:
+		Get environment variables
+		Loop over environment variables array:
+			print
+	else:
+		Get environment variables
+		find var
+		print
+
+
+echo(char *comment)
+	if comment is NULL:
+		read comment from stdin
+	else:
+		print comment to stdout followed by newline
+
+help(void)
+	Open manual file
+	pipe
+	fork
+	if child:
+		dup2(fd[read], 0)
+		exec 'more'
+	else:
+		write(fd[write], man file)
+		wait()
+
+pause(void)
+	while getchar is not 'enter'
+	flush stdin
+
+quit(void)
+	shut everything down and call exit()
+
+// Development and Testing Paradigms
+-Built-ins and key functions for the operation of the program will be in separate files
+ from the main program.
+-Unit tests will be created for functions and built ins
+-Program will be developed with increasing degrees of functionality that can be tested at each step
+	1. Construct main loop to take arguments and parse, but print output instead of executing
+	2. Write any additional functions necessary to complete the main loop
+	3. Implement logic for process execution
+	4. Implement Piping and redirection
+	5. Apply logic from main loop to processing batch files

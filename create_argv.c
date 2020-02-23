@@ -7,7 +7,8 @@
 int create_argv(char ***argv, char **tokens){
     size_t argv_size = DEF_ARRSIZE;
     int n = 0;
-    char *tok = *(tokens + n);
+    char *tok = *tokens; // get the first token
+    size_t size;
     if((*argv = (char **) malloc(sizeof(char *) * argv_size)) == NULL)
         return -1;
     while(tok != NULL
@@ -16,14 +17,21 @@ int create_argv(char ***argv, char **tokens){
         && strcmp(tok, ">") != 0
         && strcmp(tok, ">>") != 0
         && strcmp(tok, "|") != 0){
-        if(n == argv_size){
+        if(n == argv_size - 1){
             argv_size += 2; // add two more so there is space for NULL at end
             if((*argv = (char **) realloc(*argv, sizeof(char *) * argv_size)) == NULL)
                 return -1;
         }
-        if((*(*argv + n) = (char *) malloc(sizeof(tok))) == NULL)
-            return -1;
-        memcpy(*(*argv + n++), tok, sizeof(*tok));
+        // duplicate strings
+        // allocate space for string
+        // if(((*(*argv + n) = (char *) malloc(strlen(tok) + 1))) == NULL)
+            // return -1;
+        // copy tok
+        // memcpy(*(*argv + n++), tok, strlen(tok) + 1);
+        size = strlen(tok) + 1;
+        (*argv)[n] = (char *) malloc(size);
+        memcpy((*argv)[n], tok, size);
+        n++;
         tok = *(tokens + n);
     }
     *(*argv + (n + 1)) = NULL; // terminate argv

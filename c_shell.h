@@ -31,7 +31,7 @@ typedef struct queue{
 
 // Data Structure Functions
 queue * init_queue(void);
-int enqueue(queue *, const struct cmd_node *);
+int enqueue(queue *, struct cmd_node *);
 struct cmd_node * dequeue(queue *);
 void print_queue(queue *);
 

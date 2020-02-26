@@ -15,6 +15,9 @@ int parse(char *cmd_string, queue *the_queue){
     int tok_size = DEF_TOKENS;
     size_t size;
 
+    // reset any previous state
+    the_queue->background = 0;
+
     // Tokenize
     if((tok_arr = (char **)malloc(sizeof(char*) * tok_size)) == NULL)
         return -1;
@@ -42,45 +45,53 @@ int parse(char *cmd_string, queue *the_queue){
     tok_arr_cpy = tok_arr;
     // enqueue assumes space has already been allocated
     cmd_node *cmd = (cmd_node *) malloc(sizeof(cmd_node));
-    n_cmds++;
+    cmd_node *head = cmd; // save the head of the list
     cmd->argv = NULL;
     int toks_read;
-    char kword[20];
-    enqueue(the_queue, cmd);
+    // char *tok_arr[20];
+    // enqueue(the_queue, cmd);
     while(*tok_arr != NULL){
-        toks_read = create_argv(&cmd->argv, tok_arr);
-        tok_arr += toks_read;
-        cmd->cmd = cmd->argv[0];
-        if(*tok_arr != NULL){
-            strcpy(kword, *tok_arr++); // save the next keyword and advance to next tok
-            if(strcmp(kword, "&") == 0){
-                the_queue->background = 1;
-                enqueue(the_queue, cmd); // if background operator is seen it is the last cmd in chain
-                if((cmd = (cmd_node *) malloc(sizeof(cmd_node))) == NULL){
-                    fprintf(stderr, "%s\n", "Error: Mem alloc issue in parse");
-                    exit(1);
-                }
-
-            } else if(strcmp(kword, "<") == 0){
-                cmd->input = strdup(*tok_arr++);
-                // cmd->input = *tok_arr++;
-            } else if(strcmp(kword, ">") == 0){
-                cmd->output = strdup(*tok_arr++);
-                // cmd->output = *tok_arr++;
-            }else if(strcmp(kword, ">>") == 0){
-                cmd->append = strdup(*tok_arr++);
-                // cmd->append = *tok_arr++;
-            }else if(strcmp(kword, "|") == 0){
-                cmd->pipe = (cmd_node *) malloc(sizeof(cmd_node));
-                cmd = cmd->pipe; // move to next in chain
-                toks_read = create_argv(&cmd->argv, tok_arr);
-                tok_arr += toks_read;
-                cmd->cmd = cmd->argv[0];
-                n_cmds++;
+        // strcpy(*tok_arr, *tok_arr); // save the next keyword and advance to next tok
+        if(strcmp(*tok_arr, "&") == 0){
+            tok_arr++;
+            the_queue->background = 1;
+            enqueue(the_queue, head); // if background operator is seen it is the last cmd in chain
+            if((cmd = (cmd_node *) malloc(sizeof(cmd_node))) == NULL){
+                fprintf(stderr, "%s\n", "Error: Mem alloc issue in parse");
+                exit(1);
             }
+            head = cmd;
+        } else if(strcmp(*tok_arr, "<") == 0){
+            tok_arr++;
+            cmd->input = strdup(*tok_arr++);
+            // cmd->input = *tok_arr++;
+        } else if(strcmp(*tok_arr, ">") == 0){
+            tok_arr++;
+            cmd->output = strdup(*tok_arr++);
+            // cmd->output = *tok_arr++;
+        }else if(strcmp(*tok_arr, ">>") == 0){
+            tok_arr++;
+            cmd->append = strdup(*tok_arr++);
+            // cmd->append = *tok_arr++;
+        }else if(strcmp(*tok_arr, "|") == 0){
+            tok_arr++;
+            cmd->pipe = (cmd_node *) malloc(sizeof(cmd_node));
+            cmd = cmd->pipe; // move to next in chain
+            toks_read = create_argv(&cmd->argv, tok_arr);
+            tok_arr += toks_read;
+            cmd->cmd = cmd->argv[0];
+            n_cmds++;
+        }
+        else{ // next token is a comma
+            toks_read = create_argv(&cmd->argv, tok_arr);
+            tok_arr += toks_read;
+            cmd->cmd = cmd->argv[0];
+            n_cmds++;
         }
 
+
     }
+    enqueue(the_queue, head);
     // clean up the token array
     i = 0;
     for(; *(tok_arr_cpy + i) != NULL; i++)

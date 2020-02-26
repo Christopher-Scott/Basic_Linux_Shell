@@ -2,7 +2,10 @@
 objects = dequeue.o enqueue.o init_queue.o print_queue.o\
 			parse.o create_argv.o
 
-all: test-funcs libc_shell.a
+all: myshell test-funcs libc_shell.a
+
+myshell: main.c c_shell.h libc_shell.a
+	gcc -g -o myshell main.c -L. -lc_shell
 
 test-funcs: test-funcs.c c_shell.h libc_shell.a
 	gcc -g -o test-funcs test-funcs.c -L./ -lc_shell

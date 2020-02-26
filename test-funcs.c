@@ -13,16 +13,22 @@ int main(){
     puts("");
 
     // Test parse
-    char cmd_string[100] = "echo Hello, World";
+    char cmd_string[100] = "echo Hello, World < test.txt | grep [A-Z] | cat > output.txt & echo sup | grep | cat";
     queue *cmd_queue = init_queue();
     n = parse(cmd_string, cmd_queue);
     printf("parse returned: %d\n", n);
     print_queue(cmd_queue);
-    cmd_node *cmd = dequeue(cmd_queue);
-    for(int i = 0; cmd->argv[i] != NULL; i++)
-        printf("%s ", cmd->argv[i]);
-    printf("\ninput: %s \noutput: %s \nappend: %s\npipe: %p\n",
-            cmd->input, cmd->output, cmd->append, cmd->pipe);
-
+    // cmd_node *cmd, *head;
+    // while((head = dequeue(cmd_queue)) != NULL){ // iterate queue
+    //     cmd = head;
+    //     while(cmd != NULL){ // iterate cmd list
+    //         puts("");
+    //         for(int i = 0; cmd->argv[i] != NULL; i++) //print arg array
+    //             printf("%s ", cmd->argv[i]);
+    //         printf("\ninput: %s \noutput: %s \nappend: %s\npipe: %p\n",
+    //             cmd->input, cmd->output, cmd->append, cmd->pipe);
+    //         cmd = cmd->pipe;
+    //     }
+    // }
     return 0;
 }

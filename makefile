@@ -1,6 +1,7 @@
 # CIS3207 Lab2 Shell - Christopher Scott
 objects = dequeue.o enqueue.o init_queue.o print_queue.o\
-			parse.o create_argv.o
+			parse.o create_argv.o is_builtin.o run_builtin.o\
+			buildpath.o
 
 all: myshell test-funcs libc_shell.a
 
@@ -26,3 +27,9 @@ parse.o: parse.c c_shell.h
 	gcc -g -c parse.c
 create_argv.o: create_argv.c c_shell.h
 	gcc -g -c create_argv.c
+is_builtin.o: is_builtin.c	c_shell.h
+	gcc -g -c is_builtin.c
+run_builtin.o: run_builtin.c c_shell.h
+	gcc -g -c run_builtin.c
+buildpath.o: buildpath.c c_shell.h
+	gcc -g -c buildpath.c

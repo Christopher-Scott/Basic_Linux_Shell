@@ -4,7 +4,7 @@
 int main(int argc, char **argv){
     queue *cmd_queue = init_queue();
     cmd_node *current, *cmd;
-    char *prompt = ">";
+    char *prompt = "> ";
     char *line = NULL;
     size_t n = 0;
     ssize_t chars_read = 0;
@@ -44,22 +44,23 @@ int main(int argc, char **argv){
                     run_builtin(current, builtin_index);
                 }
                 else{
+                    // buildpath(path_list, current);
+                    // printf("Executing: %s\n", current->cmd);
                     if((pid = fork()) < 0){
                         fprintf(stderr, "%s\n", strerror(errno));
                     }
                     if(pid == 0){ // child, constuct full path and exec cmd
                         buildpath(path_list, current);
+                        // printf("Executing: %s\n", current->cmd);
                         execv(current->cmd, current->argv);
                     }
                     else {
                         if(!cmd_queue->background){
+                            // printf("Running in the background\n");
                             wait(&status);
                         }
 
                     }
-                    // for(int i = 0; current->argv[i] != NULL; i++) //print arg array
-                    //     printf("%s ", current->argv[i]);
-                    // puts("");
                     // if(cmd_queue->background){
                     //     printf("Running in the background\n");
                     // }

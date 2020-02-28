@@ -49,6 +49,7 @@ int create_argv(char ***, char **);
 int is_builtin(const char *);
 int run_builtin(const cmd_node *, const int);
 int buildpath(char **, cmd_node *);
+int clean_node(cmd_node *);
 
 
 #endif //LAB2_C_SHELL_H

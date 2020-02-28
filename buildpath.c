@@ -5,18 +5,20 @@
 #define MAX_PATH 256
 int buildpath(char **path, cmd_node *cmd){
     char buffer[MAX_PATH];
+    char *temp;
     while(*path != NULL){
-        strcpy(cmd->cmd, buffer);
-        strcat(buffer, *path);
+        strcpy(buffer, *path);
+        strcat(buffer, cmd->cmd);
         if(access(buffer, X_OK) != -1){ // full path found
-            free(cmd->argv[0]); // free the token that was previously held
+            temp = cmd->argv[0];
             size_t n = strlen(buffer);
             if((cmd->argv[0] = (char *) malloc(n)) == NULL){
                 fprintf(stderr, "%s\n", "Error: Allocation");
                 exit(EXIT_FAILURE);
             }
-            memcpy(buffer, cmd->argv[0], n);
+            memcpy(cmd->argv[0], buffer, n);
             cmd->cmd = cmd->argv[0];
+            free(temp); // free the token that was previously held
             return 1;
         }
         path++;

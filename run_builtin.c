@@ -10,6 +10,8 @@ int run_builtin(const cmd_node * cmd, const int index){
         case HELP:
         case PAUSE:
         case EXIT:
+            exit(EXIT_SUCCESS);
+            break;
         default:
             printf("Running %s\n", cmd->cmd);
             break;

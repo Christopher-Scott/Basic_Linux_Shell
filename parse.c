@@ -44,7 +44,11 @@ int parse(char *cmd_string, queue *the_queue){
     tok_arr[i] = NULL; // NULL terminate tok_arr
     tok_arr_cpy = tok_arr;
     // enqueue assumes space has already been allocated
-    cmd_node *cmd = (cmd_node *) malloc(sizeof(cmd_node));
+    cmd_node *cmd;
+    if((cmd = init_cmd()) == NULL){
+        fprintf(stderr, "%s\n", "Error: Mem alloc in parse");
+        exit(1);
+    }
     cmd_node *head = cmd; // save the head of the list
     cmd->argv = NULL;
     int toks_read;
@@ -56,8 +60,8 @@ int parse(char *cmd_string, queue *the_queue){
             tok_arr++;
             the_queue->background = 1;
             enqueue(the_queue, head); // if background operator is seen it is the last cmd in chain
-            if((cmd = (cmd_node *) malloc(sizeof(cmd_node))) == NULL){
-                fprintf(stderr, "%s\n", "Error: Mem alloc issue in parse");
+            if((cmd = init_cmd()) == NULL){
+                fprintf(stderr, "%s\n", "Error: Mem alloc in parse");
                 exit(1);
             }
             head = cmd;
@@ -65,24 +69,24 @@ int parse(char *cmd_string, queue *the_queue){
             tok_arr++;
             cmd->input = strdup(*tok_arr++);
             // cmd->input = *tok_arr++;
-        } else if(strcmp(*tok_arr, ">") == 0){
-            tok_arr++;
-            cmd->output = strdup(*tok_arr++);
-            // cmd->output = *tok_arr++;
         }else if(strcmp(*tok_arr, ">>") == 0){
             tok_arr++;
             cmd->append = strdup(*tok_arr++);
             // cmd->append = *tok_arr++;
+        }else if(strcmp(*tok_arr, ">") == 0){
+            tok_arr++;
+            cmd->output = strdup(*tok_arr++);
+            // cmd->output = *tok_arr++;
         }else if(strcmp(*tok_arr, "|") == 0){
             tok_arr++;
-            cmd->pipe = (cmd_node *) malloc(sizeof(cmd_node));
+            cmd->pipe = init_cmd();
             cmd = cmd->pipe; // move to next in chain
             toks_read = create_argv(&cmd->argv, tok_arr);
             tok_arr += toks_read;
             cmd->cmd = cmd->argv[0];
             n_cmds++;
         }
-        else{ // next token is a comma
+        else{ // next token is a command
             toks_read = create_argv(&cmd->argv, tok_arr);
             tok_arr += toks_read;
             cmd->cmd = cmd->argv[0];
@@ -96,7 +100,7 @@ int parse(char *cmd_string, queue *the_queue){
     i = 0;
     for(; *(tok_arr_cpy + i) != NULL; i++)
         free(*(tok_arr_cpy + i));
-    free(*(tok_arr_cpy + i)); // free last pointer
+    // free(*(tok_arr_cpy + i)); // free last pointer
     free(tok_arr_cpy); // free array pointer
     return n_cmds;
 }

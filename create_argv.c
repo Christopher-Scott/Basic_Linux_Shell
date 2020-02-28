@@ -5,11 +5,12 @@
 // allocates space in argv for the tokens and copies them over
 // returns -1 on a failure
 int create_argv(char ***argv, char **tokens){
-    size_t argv_size = DEF_ARRSIZE;
+    // size_t argv_size = DEF_ARRSIZE;
+    size_t argv_size = 1;
     int n = 0;
     char *tok = *tokens; // get the first token
     size_t size;
-    if((*argv = (char **) malloc(sizeof(char *) * argv_size)) == NULL)
+    if((*argv = (char **) calloc(argv_size, sizeof(char *) * argv_size)) == NULL)
         return -1;
     while(tok != NULL
         && strcmp(tok, "&") != 0
@@ -34,6 +35,7 @@ int create_argv(char ***argv, char **tokens){
         n++;
         tok = *(tokens + n);
     }
-    *(*argv + (n + 1)) = NULL; // terminate argv
+    // (*argv)[n + 1] = (char *) malloc(sizeof(NULL)); // terminate argv
+    // (*argv)[n + 1] = NULL;
     return n;
 }

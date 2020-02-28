@@ -11,6 +11,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#define MAX_PATH 256
+
 typedef struct cmd_node{
     char * cmd;
     char ** argv;
@@ -50,6 +52,11 @@ int is_builtin(const char *);
 int run_builtin(const cmd_node *, const int);
 int buildpath(char **, cmd_node *);
 int clean_node(cmd_node *);
+cmd_node *init_cmd(void);
+
+// built ins
+int echo(char **);
+
 
 
 #endif //LAB2_C_SHELL_H

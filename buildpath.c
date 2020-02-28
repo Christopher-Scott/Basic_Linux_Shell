@@ -2,7 +2,6 @@
 // if successful, modifies the cmd_node to have full path
 // returns 1 on success or 0 on failure
 #include "c_shell.h"
-#define MAX_PATH 256
 int buildpath(char **path, cmd_node *cmd){
     char buffer[MAX_PATH];
     char *temp;

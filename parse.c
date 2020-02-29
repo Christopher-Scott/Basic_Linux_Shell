@@ -15,8 +15,8 @@ int parse(char *cmd_string, queue *the_queue){
     int tok_size = DEF_TOKENS;
     size_t size;
 
-    // reset any previous state
-    the_queue->background = 0;
+    // // reset any previous state
+    // the_queue->background = 0;
 
     // Tokenize
     if((tok_arr = (char **)malloc(sizeof(char*) * tok_size)) == NULL)
@@ -58,7 +58,7 @@ int parse(char *cmd_string, queue *the_queue){
         // strcpy(*tok_arr, *tok_arr); // save the next keyword and advance to next tok
         if(strcmp(*tok_arr, "&") == 0){
             tok_arr++;
-            the_queue->background = 1;
+            head->background = 1;
             enqueue(the_queue, head); // if background operator is seen it is the last cmd in chain
             if((cmd = init_cmd()) == NULL){
                 fprintf(stderr, "%s\n", "Error: Mem alloc in parse");

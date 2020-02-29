@@ -20,6 +20,7 @@ typedef struct cmd_node{
     char * output;
     char * append;
     struct cmd_node * pipe; // a pointer to the next command in a pipe chain
+    short background;
 }cmd_node;
 
 enum builtins{
@@ -36,7 +37,6 @@ typedef struct queue{
     size_t size;
     node * head;
     node * tail;
-    short background;
 } queue;
 
 // Data Structure Functions
@@ -53,6 +53,7 @@ int run_builtin(const cmd_node *, const int);
 int buildpath(char **, cmd_node *);
 int clean_node(cmd_node *);
 cmd_node *init_cmd(void);
+void prompt(char *);
 
 // built ins
 int echo(char **);

@@ -89,7 +89,7 @@ int main(int argc, char **argv){
                         }
                     }
                     else { // parent
-                        if(!cmd_queue->background){
+                        if(!current->background){
                             wait(&status);
                         }
 
@@ -101,9 +101,6 @@ int main(int argc, char **argv){
                 cmd = current; // current will remain head of the list
                 int read = STDIN_FILENO;
                 while(cmd->pipe != NULL){
-                    // for(int i = 0; cmd->argv[i] != NULL; i++) //print arg array
-                        // printf("%s ", cmd->argv[i]);
-                    // puts("");
                     pipe(fd);
                     if((pid = fork()) == -1){
                         fprintf(stderr, "%s\n", strerror(errno));
@@ -127,7 +124,9 @@ int main(int argc, char **argv){
                             }
                         }
                     }
-                    else{
+                    else{ // parent
+                        if(!current->background)
+                            wait(&status);
                         close(fd[WRITE]);
                         read = fd[READ]; // save the read end for next cmd
                         cmd = cmd->pipe;
@@ -174,7 +173,7 @@ int main(int argc, char **argv){
 
                 }
                 else{ // parent
-                    if(!cmd_queue->background)
+                    if(!current->background)
                         wait(&status);
                 }
 

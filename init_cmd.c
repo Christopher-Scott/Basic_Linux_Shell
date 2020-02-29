@@ -11,5 +11,6 @@ cmd_node *init_cmd(void){
     cmd->output = NULL;
     cmd->append = NULL;
     cmd->pipe = NULL;
+    cmd->background = 0;
     return cmd;
 }

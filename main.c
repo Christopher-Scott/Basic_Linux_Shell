@@ -197,6 +197,9 @@ int main(int argc, char **argv){
             clean_node(current); // clean up allocated mem in current cmd node
             current = NULL;
         }
+    memset(pwd, '\0', sizeof(pwd));
+    getcwd(pwd, MAX_PATH);
+    strcat(pwd, "/"); // TODO: Better solution than this
     prompt(pwd);
     }
 // ================ END INTERACTIVE LOOP =================

@@ -57,6 +57,7 @@ void prompt(char *);
 
 // built ins
 int echo(char **);
+int cd(char *);
 
 
 

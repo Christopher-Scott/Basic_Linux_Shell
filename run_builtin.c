@@ -3,7 +3,8 @@
 int run_builtin(const cmd_node * cmd, const int index){
     switch(index){
         case CD:
-            printf("Running %s\n", cmd->cmd);
+            // printf("Running %s\n", cmd->cmd);
+            cd(cmd->argv[1]); // cd expects 1 arg, ok if NULL
             break;
         case DIR:
             printf("Running %s\n", cmd->cmd);

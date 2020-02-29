@@ -2,7 +2,7 @@
 objects = dequeue.o enqueue.o init_queue.o print_queue.o\
 			parse.o create_argv.o is_builtin.o run_builtin.o\
 			buildpath.o clean_node.o init_cmd.o prompt.o\
-			echo.o
+			echo.o cd.o
 
 all: myshell test-funcs libc_shell.a
 
@@ -43,3 +43,5 @@ promt.o: prompt.c c_shell.h
 
 echo.o: echo.c c_shell.h
 	gcc -g -c echo.c
+cd.o: cd.c c_shell.h
+	gcc -g -c cd.c

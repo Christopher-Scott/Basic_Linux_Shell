@@ -1,0 +1,4 @@
+Problems:
+- in piping chains, had issue where outputs were interleaving.  Had to make parent
+  wait for child to finish to resolve.
+- Simple issue, pwd needs to be concatenated with "/" for building paths

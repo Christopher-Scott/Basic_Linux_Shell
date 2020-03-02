@@ -16,8 +16,8 @@ int main(){
 
     // Test is_builtin
     assert(is_builtin("cd") == CD);
-    assert(is_builtin("dir") == DIR);
-    assert(is_builtin("environ") == ENVIRON);
+    assert(is_builtin("dir") == B_DIR);
+    assert(is_builtin("environ") == ENV);
     assert(is_builtin("clr") == CLR);
     assert(is_builtin("echo") == ECHO);
     assert(is_builtin("help") == HELP);

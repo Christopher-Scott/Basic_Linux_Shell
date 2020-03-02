@@ -3,27 +3,25 @@
 int run_builtin(const cmd_node * cmd, const int index){
     switch(index){
         case CD:
-            // printf("Running %s\n", cmd->cmd);
             cd(cmd->argv[1]); // cd expects 1 arg, ok if NULL
             break;
-        case DIR:
-            printf("Running %s\n", cmd->cmd);
+        case B_DIR:
+            dir(cmd->argv[1]); // dir expects 1 arg, ok if NULL
             break;
-        case ENVIRON:
-            printf("Running %s\n", cmd->cmd);
+        case ENV:
+            env(cmd->argv[1]);
             break;
         case CLR:
-            printf("Running %s\n", cmd->cmd);
+            clr();
             break;
         case ECHO:
-            // printf("Running %s\n", cmd->cmd);
             echo((cmd->argv + 1));
             break;
         case HELP:
-            printf("Running %s\n", cmd->cmd);
+            help();
             break;
         case PAUSE:
-            printf("Running %s\n", cmd->cmd);
+            c_pause();
             break;
         case EXIT:
             exit(EXIT_SUCCESS);

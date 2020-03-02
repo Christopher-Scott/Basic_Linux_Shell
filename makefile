@@ -2,7 +2,7 @@
 objects = dequeue.o enqueue.o init_queue.o print_queue.o\
 			parse.o create_argv.o is_builtin.o run_builtin.o\
 			buildpath.o clean_node.o init_cmd.o prompt.o\
-			echo.o cd.o
+			echo.o cd.o clr.o dir.o env.o help.o c_pause.o
 
 all: myshell test-funcs libc_shell.a
 
@@ -15,6 +15,7 @@ test-funcs: test-funcs.c c_shell.h libc_shell.a
 libc_shell.a: $(objects)
 	ar rcs libc_shell.a $(objects)
 
+# Data Structures
 dequeue.o: dequeue.c c_shell.h
 	gcc -g -c dequeue.c
 enqueue.o: enqueue.c c_shell.h
@@ -24,6 +25,7 @@ init_queue.o: init_queue.c c_shell.h
 print_queue.o: print_queue.c c_shell.h
 	gcc -g -c print_queue.c
 
+# Shell functions
 parse.o: parse.c c_shell.h
 	gcc -g -c parse.c
 create_argv.o: create_argv.c c_shell.h
@@ -41,7 +43,18 @@ init_cmd.o: init_cmd.c	c_shell.h
 promt.o: prompt.c c_shell.h
 	gcc -g -c prompt.c
 
+# Built ins
 echo.o: echo.c c_shell.h
 	gcc -g -c echo.c
 cd.o: cd.c c_shell.h
 	gcc -g -c cd.c
+clr.o: clr.c c_shell.h
+	gcc -g -c clr.c
+dir.o: dir.c c_shell.h
+	gcc -g -c dir.c
+env.o: env.c c_shell.h
+	gcc -g -c env.c
+help.o: help.c c_shell.h
+	gcc -g -c help.c
+c_pause.o: c_pause.c c_shell.h
+	gcc -g -c c_pause.c

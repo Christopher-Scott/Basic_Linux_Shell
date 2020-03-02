@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <dirent.h>
 
 #define MAX_PATH 256
 
@@ -24,7 +25,7 @@ typedef struct cmd_node{
 }cmd_node;
 
 enum builtins{
-    CD, DIR, ENVIRON, CLR, ECHO, HELP, PAUSE, EXIT
+    CD, B_DIR, ENV, CLR, ECHO, HELP, PAUSE, EXIT
 };
 
 // Data Structures
@@ -58,7 +59,11 @@ void prompt(char *);
 // built ins
 int echo(char **);
 int cd(char *);
-
+int clr(void);
+int dir(char *);
+int env(char *);
+int help(void);
+void c_pause(void);
 
 
 #endif //LAB2_C_SHELL_H

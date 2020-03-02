@@ -186,17 +186,17 @@ int main(int argc, char **argv){
             if(in != STDIN_FILENO){ // Restore stdin
                 dup2(save_in, STDIN_FILENO);
                 close(in);
-                in = 0;
+                in = STDIN_FILENO;
             }
             if(out != STDOUT_FILENO){ // Restore stdout
                 dup2(save_out, STDOUT_FILENO);
                 close(out);
-                out = 1;
+                out = STDOUT_FILENO;
             }
             if(append != STDOUT_FILENO){ // Restore stdout
                 dup2(save_out, STDOUT_FILENO);
                 close(append);
-                append = 1;
+                append = STDOUT_FILENO;
             }
             clean_node(current); // clean up allocated mem in current cmd node
             current = NULL;

@@ -27,7 +27,6 @@ int main(int argc, char **argv){
         return EXIT_SUCCESS;
     }
     getcwd(pwd, MAX_PATH);
-    strcat(pwd, "/"); // TODO: Better solution than this
 
 // ================ INTERACTIVE LOOP =================
     prompt(pwd);
@@ -43,6 +42,7 @@ int main(int argc, char **argv){
         // -------------- SETUP REDIRECTION -----------------
             if(current->input != NULL){ // Setup input redirection
                 strcpy(buf, pwd);
+                strcat(buf, "/");
                 strcat(buf, current->input); // create full path
                 if((in = open(buf, O_RDONLY, S_IRUSR)) == -1){
                     fprintf(stderr, "%s\n", strerror(errno));
@@ -55,6 +55,7 @@ int main(int argc, char **argv){
             }
             else if(current->output != NULL){ // Setup output redirection
                 strcpy(buf, pwd);
+                strcat(buf, "/");
                 strcat(buf, current->output); // create full path
                 if((out = open(buf, O_WRONLY | O_CREAT | O_TRUNC, S_IWUSR | S_IRUSR)) == -1){
                     fprintf(stderr, "%s\n", strerror(errno));
@@ -64,6 +65,7 @@ int main(int argc, char **argv){
             }
             else if(current->append != NULL){ // setup append output redirection
                 strcpy(buf, pwd);
+                strcat(buf, "/");
                 strcat(buf, current->append); // create full path
                 if((out = open(buf, O_WRONLY | O_CREAT | O_APPEND, S_IWUSR | S_IRUSR)) == -1){
                     fprintf(stderr, "%s\n", strerror(errno));
@@ -143,6 +145,7 @@ int main(int argc, char **argv){
                     }
                     else if(cmd->output != NULL){ // Setup output redirection
                         strcpy(buf, pwd);
+                        strcat(buf, "/");
                         strcat(buf, cmd->output); // create full path
                         if((out = open(buf, O_WRONLY | O_CREAT | O_TRUNC, S_IWUSR | S_IRUSR)) == -1){
                             fprintf(stderr, "%s\n", strerror(errno));
@@ -152,6 +155,7 @@ int main(int argc, char **argv){
                     }
                     else if(cmd->append != NULL){ // setup append output redirection
                         strcpy(buf, pwd);
+                        strcat(buf, "/");
                         strcat(buf, cmd->append); // create full path
                         if((out = open(buf, O_WRONLY | O_CREAT | O_APPEND, S_IWUSR | S_IRUSR)) == -1){
                             fprintf(stderr, "%s\n", strerror(errno));
@@ -187,19 +191,19 @@ int main(int argc, char **argv){
             if(out != STDOUT_FILENO){ // Restore stdout
                 dup2(save_out, STDOUT_FILENO);
                 close(out);
-                out = 0;
+                out = 1;
             }
             if(append != STDOUT_FILENO){ // Restore stdout
                 dup2(save_out, STDOUT_FILENO);
                 close(append);
-                append = 0;
+                append = 1;
             }
             clean_node(current); // clean up allocated mem in current cmd node
             current = NULL;
         }
-    memset(pwd, '\0', sizeof(pwd));
+    memset(pwd, '\0', sizeof(pwd)); // clear out pwd array
     getcwd(pwd, MAX_PATH);
-    strcat(pwd, "/"); // TODO: Better solution than this
+    // strcat(pwd, "/"); // TODO: Better solution than this
     prompt(pwd);
     }
 // ================ END INTERACTIVE LOOP =================

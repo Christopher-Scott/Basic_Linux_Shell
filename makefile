@@ -1,7 +1,7 @@
 # CIS3207 Lab2 Shell - Christopher Scott
 objects = dequeue.o enqueue.o init_queue.o print_queue.o\
 			parse.o create_argv.o is_builtin.o run_builtin.o\
-			buildpath.o clean_node.o init_cmd.o prompt.o\
+			buildpath.o clean_node.o init_cmd.o prompt.o fullpath.o\
 			echo.o cd.o clr.o dir.o env.o help.o c_pause.o
 
 all: myshell test-funcs libc_shell.a
@@ -42,6 +42,8 @@ init_cmd.o: init_cmd.c	c_shell.h
 	gcc -g -c init_cmd.c
 promt.o: prompt.c c_shell.h
 	gcc -g -c prompt.c
+fullpath.o: fullpath.c c_shell.h
+	gcc -g -c fullpath.c
 
 # Built ins
 echo.o: echo.c c_shell.h

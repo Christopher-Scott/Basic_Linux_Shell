@@ -55,6 +55,7 @@ int buildpath(char **, cmd_node *);
 int clean_node(cmd_node *);
 cmd_node *init_cmd(void);
 void prompt(char *);
+char *fullpath(char *, const char *, const char *, size_t);
 
 // built ins
 int echo(char **);

@@ -26,11 +26,14 @@ int main(){
 
     puts("'is_builtin' pass");
 
-    // Test buildpath
-    // char *path[] = {"/bin/", "/usr/bin/", NULL};
-    // cmd_node cmd;
-    // cmd->cmd = "ls";
-    // assert(strcmp("/bin/ls", ) == 0)
+    // Test fullpath
+    char buffer[256];
+    char *pwd = "/home";
+    char *filename = "test.txt";
+    fullpath(buffer, pwd, filename, 256);
+    assert(strcmp(buffer, "/home/test.txt") == 0);
+
+    puts("'fullpath' pass");
 
     // Test parse
     char cmd_string[100] = "echo Hello, World < test.txt | grep [A-Z] | cat > output.txt & echo sup | grep | cat";

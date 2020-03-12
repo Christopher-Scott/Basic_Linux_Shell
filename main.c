@@ -248,6 +248,7 @@ int main(int argc, char **argv){
                             }
                             else{
                                 fprintf(stderr, "Error: %s could not be found in path\n", current->cmd);
+                                return EXIT_FAILURE;
                             }
                         }
                         else { // parent
@@ -283,6 +284,7 @@ int main(int argc, char **argv){
                                 }
                                 else{
                                     fprintf(stderr, "Error: %s could not be found in path\n", cmd->cmd);
+                                    return EXIT_FAILURE;
                                 }
                             }
                         }
@@ -328,6 +330,7 @@ int main(int argc, char **argv){
                             }
                             else{
                                 fprintf(stderr, "Error: %s could not be found in path\n", cmd->cmd);
+                                return EXIT_FAILURE;
                             }
                         }
 

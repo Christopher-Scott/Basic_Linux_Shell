@@ -20,7 +20,7 @@ int help(void){
     if(pid == 0){ // child
         // close(fd[WRITE]);
         // dup2(fd[READ], STDIN_FILENO);
-        execlp("less", "less", "manual.txt", NULL);
+        execlp("less", "less", "readme", NULL);
         return EXIT_FAILURE;
     }
     else{ // parent

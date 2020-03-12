@@ -8,12 +8,12 @@ int dir(char * path){
         path = buffer;
     }
     DIR *dir_stream;
-    if((dir_stream = opendir(path)) == NULL){
+    if((dir_stream = opendir(path)) == NULL){ // open the argument path
         fprintf(stderr, "%s\n", strerror(errno));
         return EXIT_FAILURE;
     }
     struct dirent *dir;
-    while((dir = readdir(dir_stream)) != NULL){
+    while((dir = readdir(dir_stream)) != NULL){ // read file names and print
         printf("%s\n", dir->d_name);
     }
     return EXIT_SUCCESS;

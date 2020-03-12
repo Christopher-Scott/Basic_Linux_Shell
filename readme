@@ -1,0 +1,92 @@
+    NAME
+        myshell
+
+    SYNOPSIS
+        myshell [batch file]
+
+    DESCRIPTION
+        myshell is a simplistic shell that provides the basics of what you expect
+        from a shell program.  External commands are supported as well as file
+        options like redirection and piping.
+
+    INTERACTIVE MODE
+        If myshell is called with no additional arguments it will run in interactive
+        mode. The shell will prompt the user for command entry and then execute the
+        command.  Continues until the exit built-in command is called.
+
+    BATCH MODE
+        myshell supports running commands in batches by running the shell with a
+        single argument which is the name of a batch file.  The shell will parse the
+        commands line by line from the batch file just as if the user had entered
+        them in interactive mode.  All features of interactive mode are also
+        supported in batch mode.
+
+    BUILT-IN COMMANDS
+        cd [path]
+        -   cd changes the current working directory to the directory specified at
+            [path]. If no argument is given cd will print the current working
+            directory.
+
+        dir [path]
+        -   dir will print the names of the files in the directory specified by
+            [path].  If no argument is given dir will print all the files in the
+            current working directory.
+
+        environ [var]
+        -   environ will print the value of the environment variable at [var].
+            If no argument is given envrion will print out all of the environment
+            variables.
+
+        clr
+        -   clr will remove all the current commands from the terminal window and
+            print a new prompt.
+
+        echo [comment]
+        -   echo will print [comment] to STDOUT.  If no argument is given echo will
+            print nothing.
+
+        help
+        -   help will bring you to this manual.
+
+        pause
+        -   pause will halt operations of the shell until 'enter' is pressed by the
+            user.
+
+        exit
+        -   The command exit will gracefully close the shell program.
+
+    SHELL GRAMMAR
+        Pipes
+            [command] [args] | [second command] [args] | ...
+        The shell supports arbitrarily long chains of piped commands using the '|'
+        character to connect them.  When two or more commands are piped together
+        the output on STDOUT from the first command is used as the input on STDIN
+        of the next command in the chain.  The first command may also have input
+        redirection and the last command may have output redirection.
+
+        Input Redirection
+            [command] [args] < [filename]
+        Input redirection is supported using the '<' character between a command
+        and a filename.  If the file is successfully opened any input expected in
+        the command from STDIN will instead come from the file.
+
+        Output Redirection
+            [command] [args] > [filename]
+        Output redirection is supported using the '>' character between a command
+        and a filename.  If the file is successfully opened any output expected
+        from the command on STDOUT will instead be written to the file. The file
+        specified will be destroyed if it exists already.
+
+        Output Append Redirection
+            [command] [args] >> [filename]
+        Append redirection is supported using the sequence '>>' between a command
+        and a filename.  If the file already exists it will be appended to instead
+        of being overwritten.  If the file is successfully opened any output
+        expected from the command on STDOUT will be written to the end of the file.
+
+        Background Execution
+            [command] [args] & [command] [args] & ...
+        The shell supports execution of processes in the shell background by using
+        the '&' character at the end of a command vector.  Using background
+        execution it is possible to invoke multiple commands in parallel by using
+        the background operator at the end of each command vector.

@@ -19,13 +19,13 @@ int parse(char *cmd_string, queue *the_queue){
     if((tok_arr = (char **)malloc(sizeof(char*) * tok_size)) == NULL)
         return -1;
     tok = strtok(cmd_string, delim);
-    // *(tok_arr + i) = strdup(tok);
+    // copy into arr
     size = strlen(tok) + 1;
     tok_arr[i] = (char *)malloc(size);
     memcpy(tok_arr[i], tok, size);
     i++;
     while((tok = strtok(NULL,delim)) != NULL){
-        // *(tok_arr + i) = strdup(tok);
+        // copy into arr
         size = strlen(tok) + 1;
         tok_arr[i] = (char *)malloc(size);
         memcpy(tok_arr[i], tok, size);
@@ -49,10 +49,8 @@ int parse(char *cmd_string, queue *the_queue){
     cmd_node *head = cmd; // save the head of the list
     cmd->argv = NULL;
     int toks_read;
-    // char *tok_arr[20];
-    // enqueue(the_queue, cmd);
+
     while(*tok_arr != NULL){
-        // strcpy(*tok_arr, *tok_arr); // save the next keyword and advance to next tok
         if(strcmp(*tok_arr, "&") == 0){
             tok_arr++;
             head->background = 1;
@@ -64,18 +62,16 @@ int parse(char *cmd_string, queue *the_queue){
                 }
                 head = cmd;
             }
+        // set input/output and piping in command node
         } else if(strcmp(*tok_arr, "<") == 0){
             tok_arr++;
             cmd->input = strdup(*tok_arr++);
-            // cmd->input = *tok_arr++;
         }else if(strcmp(*tok_arr, ">>") == 0){
             tok_arr++;
             cmd->append = strdup(*tok_arr++);
-            // cmd->append = *tok_arr++;
         }else if(strcmp(*tok_arr, ">") == 0){
             tok_arr++;
             cmd->output = strdup(*tok_arr++);
-            // cmd->output = *tok_arr++;
         }else if(strcmp(*tok_arr, "|") == 0){
             tok_arr++;
             cmd->pipe = init_cmd();
@@ -99,7 +95,6 @@ int parse(char *cmd_string, queue *the_queue){
     i = 0;
     for(; *(tok_arr_cpy + i) != NULL; i++)
         free(*(tok_arr_cpy + i));
-    // free(*(tok_arr_cpy + i)); // free last pointer
     free(tok_arr_cpy); // free array pointer
     return n_cmds;
 }

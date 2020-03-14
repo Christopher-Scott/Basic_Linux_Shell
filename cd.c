@@ -4,7 +4,10 @@
 int cd(char *path){
     char buffer[MAX_PATH];
     if(path == NULL){
-        printf("%s\n", getcwd(buffer, MAX_PATH));
+        if(chdir("/home") < 0){ // No path given, change to home directory
+            fprintf(stderr, "%s\n", strerror(errno));
+            return EXIT_FAILURE;
+        }
     }
 
     else{

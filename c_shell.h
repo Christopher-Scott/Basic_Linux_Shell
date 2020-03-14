@@ -10,9 +10,10 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/param.h>
 #include <dirent.h>
 
-#define MAX_PATH 256
+#define MAX_PATH MAXPATHLEN
 
 typedef struct cmd_node{
     char * cmd;

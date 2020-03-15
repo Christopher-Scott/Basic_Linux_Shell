@@ -30,5 +30,6 @@ int create_argv(char ***argv, char **tokens){
         n++;
         tok = *(tokens + n);
     }
+    (*argv)[n] = NULL;
     return n;
 }

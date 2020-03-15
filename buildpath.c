@@ -5,15 +5,21 @@
 int buildpath(char **path, cmd_node *cmd){
     char buffer[MAX_PATH];
     char *temp;
+    int i;
     while(*path != NULL){
         strcpy(buffer, *path);
+        i = strlen(buffer) - 1;
+        // if there is a pathname in the pathlist without an ending '/'
+        // assume it is a directory and append a '/'
+        if(buffer[i] != '/')
+            strcat(buffer, "/");
         strcat(buffer, cmd->cmd);
         if(access(buffer, X_OK) != -1){ // full path found
             temp = cmd->argv[0];
             size_t n = strlen(buffer);
             if((cmd->argv[0] = (char *) malloc(n)) == NULL){
                 fprintf(stderr, "%s\n", "Error: Allocation");
-                exit(EXIT_FAILURE);
+                return EXIT_FAILURE;
             }
             memcpy(cmd->argv[0], buffer, n);
             cmd->cmd = cmd->argv[0];

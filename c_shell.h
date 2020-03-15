@@ -55,7 +55,7 @@ int run_builtin(const cmd_node *, const int);
 int buildpath(char **, cmd_node *);
 int clean_node(cmd_node *);
 cmd_node *init_cmd(void);
-void prompt(char *);
+void prompt(char *, char *);
 char *fullpath(char *, const char *, const char *, size_t);
 
 // built ins

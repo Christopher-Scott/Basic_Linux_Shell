@@ -3,6 +3,7 @@
 
 #define READ 0
 #define WRITE 1
+#define MAX_FILE 255
 
 int main(int argc, char **argv){
     queue *cmd_queue = init_queue();
@@ -15,9 +16,17 @@ int main(int argc, char **argv){
     int status;
     int fd[2], in = 0, out = 1, append = 1, save_in, save_out;
 
-    char pwd[MAX_PATH], buf[MAX_PATH] = {'\0'};
-    char *path_list[] = {"/bin/", "/usr/bin/", NULL};
+    char *pwd;
+    if((pwd = calloc(MAX_PATH, MAX_PATH)) == NULL){
+        fprintf(stderr, "%s\n", "Error: Allocation");
+        return EXIT_FAILURE;
+    }
+    char buf[MAX_PATH] = {'\0'};
+    char *path_list[] = {pwd, "/bin/", "/usr/bin/", NULL};
     getcwd(pwd, MAX_PATH);
+
+    char host[MAX_FILE] = {'\0'};
+    gethostname(host, MAX_FILE);
 
     if(argc > 2){
         fprintf(stderr, "%s\n", "Usage: myshell or myshell <batch file>");
@@ -195,10 +204,10 @@ int main(int argc, char **argv){
 // ====================== END BATCH MODE ==================
     else{
 // ================ INTERACTIVE LOOP =================
-        prompt(pwd);
+        prompt(host, pwd);
         while((chars_read = getline(&line, &n, stdin)) > 0){
             if(strcmp(line, "\n") == 0){ // user hit enter only
-                prompt(pwd);
+                prompt(host, pwd);
                 continue;
             }
             *(line + (chars_read - 1)) = '\0';  // get rid of newline character
@@ -362,10 +371,10 @@ int main(int argc, char **argv){
             }
         memset(pwd, '\0', sizeof(pwd)); // clear out pwd array
         getcwd(pwd, MAX_PATH);
-        prompt(pwd);
+        prompt(host, pwd);
         }
     }
 // ================ END INTERACTIVE LOOP =================
-
+    free(pwd);
     return EXIT_SUCCESS;
 }

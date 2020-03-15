@@ -4,11 +4,11 @@
 int main(){
     // Test create_argv
     char **argv = NULL;
-    char *toks[3]  = {"echo", "blahblah", NULL};
+    char *toks[]  = {"echo", "Hi", "I", "am", "a", "long", "command", NULL};
     // printf("argv at: %p\n", argv); // should be null
     int n = create_argv(&argv, toks);
     // printf("%d toks copied to argv at: %p\n", n, argv);
-    assert(n == 2);
+    assert(n == 7);
     for(int i = 0; *(argv + i) != NULL; i++){
         assert(strcmp(argv[i], toks[i]) == 0);
     }
@@ -36,10 +36,10 @@ int main(){
     puts("'fullpath' pass");
 
     // Test parse
-    char cmd_string[100] = "echo Hello, World < test.txt | grep [A-Z] | cat > output.txt & echo sup | grep | cat";
+    char cmd_string[100] = "echo Hello, World | grep [A-Z] | cat > output.txt & ls -l | grep m";
     queue *cmd_queue = init_queue();
     n = parse(cmd_string, cmd_queue);
-    assert(n == 6);
+    assert(n == 5);
     print_queue(cmd_queue);
     return 0;
 }

@@ -1,3 +1,4 @@
+// a helper function to print a pretty prompt
 #include "c_shell.h"
 void prompt(char * host, char * pwd){
 

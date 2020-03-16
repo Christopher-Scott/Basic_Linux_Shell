@@ -1,3 +1,5 @@
+// run_builtin uses an index returned from 'is_builtin' to select the
+// built-in function and call it with the appropriate arguments
 #include "c_shell.h"
 
 int run_builtin(const cmd_node * cmd, const int index){
@@ -15,7 +17,7 @@ int run_builtin(const cmd_node * cmd, const int index){
             clr();
             break;
         case ECHO:
-            echo((cmd->argv + 1));
+            echo((cmd->argv + 1)); // echo expects an array of strings and no command name (argv[0]) 
             break;
         case HELP:
             help();

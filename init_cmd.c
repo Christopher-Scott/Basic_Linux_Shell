@@ -1,3 +1,5 @@
+// helper function to allocate space and initialize the member variables of
+// a command node
 #include "c_shell.h"
 
 cmd_node *init_cmd(void){

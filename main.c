@@ -16,6 +16,9 @@ int main(int argc, char **argv){
     int status;
     int fd[2], in = 0, out = 1, append = 1, save_in, save_out;
 
+    extern char shell_path[];
+    realpath(argv[0], shell_path); // get path to myshell executable
+
     char *pwd;
     if((pwd = calloc(MAX_PATH, MAX_PATH)) == NULL){
         fprintf(stderr, "%s\n", "Error: Allocation");

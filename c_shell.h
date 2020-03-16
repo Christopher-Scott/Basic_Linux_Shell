@@ -67,5 +67,6 @@ int env(char *);
 int help(void);
 void c_pause(void);
 
+char shell_path[MAX_PATH];
 
 #endif //LAB2_C_SHELL_H

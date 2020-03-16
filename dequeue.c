@@ -1,5 +1,6 @@
+// dequeues the head element of the queue.  Returns the element and frees the
+// memory
 #include "c_shell.h"
-// dequeues the head element of the queue.  Returns the element
 cmd_node * dequeue(queue * const the_queue) {
     cmd_node *retval;
     if(the_queue->size == 0){
@@ -9,6 +10,6 @@ cmd_node * dequeue(queue * const the_queue) {
     the_queue->head = the_queue->head->next;
     the_queue->size--;
     retval = temp->datum;
-    free(temp);
+    free(temp); // free the head queue node
     return retval;
 }

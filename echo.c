@@ -1,3 +1,4 @@
+// prints the string arguments to stdout
 #include "c_shell.h"
 
 int echo(char **string){

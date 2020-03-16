@@ -1,40 +1,32 @@
-// display the manual for the shell
+// display the manual for the shell using the 'less' program
 #include "c_shell.h"
 #define READ 0
 #define WRITE 1
-#define BUFF_SIZE 1024
 
 int help(void){
-    // int fd[2], man;
     int status;
     pid_t pid;
-    // if((man = open("manual.txt", O_RDONLY, S_IRUSR)) == -1){
-        // fprintf(stderr, "%s\n", strerror(errno));
-        // return EXIT_FAILURE;
-    // }
-    // pipe(fd);
+    extern char shell_path[];
+    char buffer[MAX_PATH];
+    // grab the path to the shell program directory and concat the readme filename
+    strncpy(buffer, shell_path, strlen(shell_path) - strlen("myshell"));
+    strcat(buffer, "readme");
+
+
     if((pid = fork()) == -1){
         fprintf(stderr, "%s\n", strerror(errno));
         return EXIT_FAILURE;
     }
     if(pid == 0){ // child
-        // close(fd[WRITE]);
-        // dup2(fd[READ], STDIN_FILENO);
-        execlp("less", "less", "readme", NULL);
+        // Using exec ensures that the help command supports redirection
+        execlp("less", "less", buffer, NULL);
         return EXIT_FAILURE;
     }
     else{ // parent
-        // char buffer[BUFF_SIZE] = {'\0'};
-        // ssize_t chars_read;
-        // close(fd[READ]);
-        // while((chars_read = read(man, buffer, BUFF_SIZE)) > 0){
-        //     write(fd[WRITE], buffer, chars_read);
-        // }
-        // if(chars_read == -1){
-        //     fprintf(stderr, "%s\n", strerror(errno));
-        //     return EXIT_FAILURE;
-        // }
         waitpid(pid, &status, 0);
     }
+    // clear buffer, not sure why but this fixes a bug where "readme" would
+    // be concatenated twice onto buffer on subsequent calls to help.
+    memset(buffer, '\0', sizeof(buffer));
     return EXIT_SUCCESS;
 }
